@@ -19,38 +19,31 @@ import {
   FlatList,
 } from 'react-native';
 
+import GoalItem from './components/GoalItem'; 
+import GoalInput from './components/GoalInput';
+
 const App: () => Node = () => {
-  const [enteredGoal, setEnteredGoal] = useState('');
+  
   const [courseGoals, setcourseGoals] = useState([]);
 
-  const goalInputHandler = (enteredText) => {
-    setEnteredGoal(enteredText);
+  const addGoalHandler = goalTitle => {
+    setcourseGoals(currentGoals => [...currentGoals, {key: Math.random().toString(), value: goalTitle}]);
   }
 
-  const addGoalHandler = () => {
-    setcourseGoals(currentGoals => [...currentGoals, {key: Math.random().toString(), value: enteredGoal}]);
+  const removeGoalHandler = goalId => {
+    setcourseGoals(currentGoals => {
+      return currentGoals.filter(goal => goal.key !== goalId)
+    })
   }
 
   return (
     <View style={styles.screen}>
-      <View style={styles.inputContainer}>
-        <TextInput 
-          style={styles.textInput}
-          onChangeText={goalInputHandler}
-          value={enteredGoal}
-        />
-        <Button title="ADD" onPress={addGoalHandler}/>
-      </View>
-      {/* <ScrollView>
-        {courseGoals.map((goal) => <View key={goal} style={styles.listItemView}><Text>{goal}</Text></View>)}
-      </ScrollView> */}
+      <GoalInput onAddGoal={addGoalHandler} />
       <FlatList
       data = {courseGoals}
       renderItem = {
         itemData => (
-          <View style={styles.listItemView}>
-            <Text>{itemData.item.value}</Text>
-          </View>
+          <GoalItem title={itemData.item.value} id={itemData.item.key} onDelete={removeGoalHandler}/>
         )}
       />
     </View>
@@ -60,22 +53,6 @@ const App: () => Node = () => {
 const styles = StyleSheet.create({
   screen: {
     margin: 30
-  },
-  inputContainer: {
-    justifyContent: 'center', 
-    alignItems: 'center'
-  },
-  textInput: {
-    width: '90%',
-    borderBottomColor: 'black', 
-    borderWidth: 1
-  },
-  listItemView:{
-    padding: 10,
-    margin: 1,
-    backgroundColor: '#189',
-    borderColor: 'black',
-    borderWidth: 1
   }
 });
 
